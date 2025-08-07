@@ -104,5 +104,10 @@ v1.0.0 – 07 August 2025
     Official site: <a href="https://puffxhost.com" target="_blank">https://puffxhost.com</a>
   </p>
 
+  <hr>
+<p align="center">
+  Developed with ❤️ by <strong>Puffx Host</strong>
+</p>
+
 </body>
 </html>
