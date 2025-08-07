@@ -61,7 +61,7 @@ ClientPasswordChanger/
 
   <h2>🧾 Changelog</h2>
   <pre>
-v1.0.0 – 04 August 2025
+v1.0.0 – 07 August 2025
 * Initial release
 * Secure client password change from client area
   </pre>
