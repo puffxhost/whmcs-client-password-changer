@@ -1,0 +1,7 @@
+{
+  "name": "Password Change",
+  "description": "Admin module to change password of WHMCS users using email, with auto-generated password.",
+  "author": "Puffx Host",
+  "language": "english",
+  "version": "1.0"
+}
