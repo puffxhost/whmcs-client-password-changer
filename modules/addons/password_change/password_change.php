@@ -8,7 +8,12 @@ if (!defined("WHMCS")) {
 function generateStrongPassword($length = 12)
 {
     $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+';
-    return substr(str_shuffle(str_repeat($chars, $length)), 0, $length);
+    $password = '';
+    $maxIndex = strlen($chars) - 1;
+    for ($i = 0; $i < $length; $i++) {
+        $password .= $chars[random_int(0, $maxIndex)];
+    }
+    return $password;
 }
 
 function password_change_config()
@@ -29,9 +34,13 @@ function password_change_output($vars)
     $message = '';
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $email = trim($_POST['email']);
+        if (!function_exists('check_token') || !check_token("WHMCS.admin.default")) {
+            $message = "<div class='alert alert-danger'>Security token invalid or expired. Reload the page and try again.</div>";
+        } else {
+        $email = isset($_POST['email']) && is_string($_POST['email']) ? trim($_POST['email']) : '';
+        $safeEmail = htmlspecialchars($email, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
-        if ($email) {
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $user = Capsule::table('tblusers')->where('email', $email)->first();
 
             if ($user) {
@@ -39,18 +48,20 @@ function password_change_output($vars)
                 $hashed = password_hash($generatedPassword, PASSWORD_DEFAULT);
 
                 Capsule::table('tblusers')
-                    ->where('email', $email)
+                    ->where('id', $user->id)
                     ->update(['password' => $hashed]);
 
-                $message = "<div class='alert alert-success'><i class='fas fa-check-circle'></i> Password updated successfully for <strong>$email</strong></div>";
+                $message = "<div class='alert alert-success'><i class='fas fa-check-circle'></i> Password updated successfully for <strong>$safeEmail</strong></div>";
             } else {
-                $message = "<div class='alert alert-danger'><i class='fas fa-exclamation-circle'></i> No user found with email <strong>$email</strong></div>";
+                $message = "<div class='alert alert-danger'><i class='fas fa-exclamation-circle'></i> No user found with email <strong>$safeEmail</strong></div>";
             }
         } else {
             $message = "<div class='alert alert-warning'><i class='fas fa-info-circle'></i> Please enter a valid email.</div>";
         }
+        }
     }
 
+    $email = htmlspecialchars($email, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     echo <<<HTML
     <style>
     .puffx-password-container {
@@ -174,6 +185,7 @@ function password_change_output($vars)
         
         <div class="puffx-form-container">
             <form method="post">
+                <?php echo generate_token("form"); ?>
                 <div class="puffx-form-group">
                     <label for="email">User Email Address</label>
                     <input type="email" name="email" id="email" class="puffx-form-control" value="{$email}" required>
