@@ -62,6 +62,7 @@ function password_change_output($vars)
     }
 
     $email = htmlspecialchars($email, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    $tokenInput = generate_token("form");
     echo <<<HTML
     <style>
     .puffx-password-container {
@@ -185,7 +186,7 @@ function password_change_output($vars)
         
         <div class="puffx-form-container">
             <form method="post">
-                <?php echo generate_token("form"); ?>
+                {$tokenInput}
                 <div class="puffx-form-group">
                     <label for="email">User Email Address</label>
                     <input type="email" name="email" id="email" class="puffx-form-control" value="{$email}" required>
