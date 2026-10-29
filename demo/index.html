@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a0b12">
+  <meta name="description" content="Interactive motion demo for the WHMCS Client Password Changer addon.">
+  <title>Password Changer — Motion Demo</title>
+  <style>
+    :root { color-scheme: dark; --bg:#0a0b12; --panel:rgba(21,23,37,.78); --line:rgba(255,255,255,.1); --text:#f5f4fa; --muted:#9999ad; --violet:#9b7bff; --cyan:#73e2d1; }
+    * { box-sizing:border-box }
+    body { margin:0; min-height:100vh; overflow-x:hidden; background:var(--bg); color:var(--text); font:15px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; }
+    .ambient { position:fixed; z-index:-1; width:34rem; aspect-ratio:1; border-radius:50%; filter:blur(100px); opacity:.22; pointer-events:none; animation:float 15s ease-in-out infinite alternate; }
+    .ambient.one { background:#703dff; top:-17rem; left:-12rem }
+    .ambient.two { background:#138a98; right:-15rem; bottom:-20rem; animation-delay:-7s }
+    .grid { position:fixed; inset:0; z-index:-1; opacity:.13; background-image:linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px); background-size:48px 48px; mask-image:linear-gradient(to bottom,black,transparent 85%) }
+    main { width:min(1080px,calc(100% - 40px)); margin:auto; padding:28px 0 64px }
+    nav { display:flex; justify-content:space-between; align-items:center; gap:20px; margin-bottom:80px; animation:rise .7s both }
+    .brand { display:flex; align-items:center; gap:11px; font-weight:650; letter-spacing:-.02em }
+    .brand-icon { display:grid; place-items:center; width:36px; height:36px; border:1px solid #a78cff55; border-radius:12px; color:#c7b8ff; background:linear-gradient(145deg,#9b7bff2e,#73e2d111); box-shadow:0 0 30px #8e66ff1e }
+    .badge { border:1px solid var(--line); border-radius:100px; padding:7px 12px; color:#b6b3c6; font-size:12px; letter-spacing:.08em; text-transform:uppercase }
+    .hero { display:grid; grid-template-columns:1fr 1fr; gap:68px; align-items:center }
+    .copy { animation:rise .8s .1s both }
+    .eyebrow { color:var(--cyan); font-size:12px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; display:flex; align-items:center; gap:9px }
+    .pulse { width:7px; height:7px; border-radius:50%; background:var(--cyan); box-shadow:0 0 15px var(--cyan); animation:pulse 2s infinite }
+    h1 { max-width:540px; margin:20px 0; font-size:clamp(42px,6vw,70px); line-height:1.01; letter-spacing:-.065em; font-weight:650 }
+    h1 span { background:linear-gradient(100deg,#c7b8ff 12%,#8f79ff 54%,#74e2d0); -webkit-background-clip:text; background-clip:text; color:transparent }
+    .intro { max-width:460px; margin:0; color:#aaa9ba; font-size:17px }
+    .meta { display:flex; gap:22px; margin-top:30px; color:#d2d0df; font-size:13px }
+    .meta span { display:flex; gap:8px; align-items:center }
+    .check { color:var(--cyan) }
+    .stage { position:relative; animation:rise .85s .2s both }
+    .orbit { position:absolute; inset:-25px; border:1px solid #b49aff25; border-radius:36px; transform:rotate(-5deg); animation:orbit 12s ease-in-out infinite alternate }
+    .card { position:relative; padding:27px; overflow:hidden; border:1px solid #ffffff17; border-radius:25px; background:linear-gradient(145deg,rgba(30,31,49,.91),rgba(16,17,28,.92)); box-shadow:0 35px 100px #0008, inset 0 1px #ffffff0a; backdrop-filter:blur(18px) }
+    .card:before { content:""; position:absolute; width:220px; height:180px; right:-100px; top:-120px; border-radius:50%; background:#9574ff40; filter:blur(60px); pointer-events:none }
+    .card-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:25px }
+    .card-title { font-size:14px; font-weight:600 }
+    .dots { display:flex; gap:5px }.dots i { width:6px;height:6px;border-radius:50%;background:#77768c }
+    label { display:block; margin:0 0 9px; color:#c3c1d0; font-size:12px; font-weight:550 }
+    .password-box { display:flex; align-items:center; gap:8px; padding:8px 8px 8px 14px; border:1px solid #ffffff15; border-radius:13px; background:#0b0c15; transition:border-color .25s,box-shadow .25s }
+    .password-box:focus-within { border-color:#9b7bff88; box-shadow:0 0 0 3px #9b7bff16 }
+    #password { min-width:0; width:100%; border:0; outline:0; background:transparent; color:#eeeaff; font:13px ui-monospace,SFMono-Regular,Consolas,monospace; letter-spacing:.02em }
+    button { border:0; color:inherit; font:inherit; cursor:pointer }
+    .icon-btn { flex:0 0 auto; display:grid; place-items:center; width:35px;height:35px;border:1px solid #ffffff12;border-radius:10px;background:#ffffff08;color:#c9c4dd;transition:background .2s,transform .2s }
+    .icon-btn:hover { background:#9b7bff2c; transform:translateY(-1px) }
+    .copy-btn { display:flex; justify-content:center;align-items:center;gap:8px;width:100%;margin-top:15px;padding:12px;border:1px solid #b5a0ff55;border-radius:12px;background:linear-gradient(100deg,#8965ef,#7657db);color:white;font-size:13px;font-weight:650;box-shadow:0 7px 24px #7754dc38;transition:filter .2s,transform .2s,box-shadow .2s }
+    .copy-btn:hover { filter:brightness(1.1);transform:translateY(-2px);box-shadow:0 10px 30px #7754dc55 }
+    .copy-btn:active { transform:translateY(0) scale(.99) }
+    .range-row { display:flex;justify-content:space-between;align-items:center;margin:23px 0 8px }
+    .range-row label { margin:0 }.length-value { color:#c9baff;font:12px ui-monospace,monospace }
+    input[type=range] { width:100%;height:4px;accent-color:#a289ff;cursor:pointer }
+    .strength { display:flex;align-items:center;gap:10px;margin-top:18px;color:#9694a8;font-size:11px }
+    .strength-bars { display:flex;gap:4px;flex:1 }.strength-bars i { height:4px;flex:1;border-radius:5px;background:#353546 }.strength-bars i.on { background:linear-gradient(90deg,#73e2d1,#a48aff);box-shadow:0 0 9px #9b7bff6b }
+    .strength strong { color:#73e2d1;font-weight:600 }
+    .footnote { margin:17px 0 0;color:#77768b;font-size:11px }
+    .bottom { display:flex;justify-content:space-between;gap:20px;margin-top:76px;padding-top:20px;border-top:1px solid #ffffff10;color:#77768b;font-size:12px;animation:rise 1s .35s both }
+    .bottom a { color:#b5a1ff;text-decoration:none }.bottom a:hover { color:#d9d0ff }
+    @keyframes rise { from { opacity:0;transform:translateY(17px) } to { opacity:1;transform:translateY(0) } }
+    @keyframes float { to { transform:translate(45px,65px) scale(1.13) } }
+    @keyframes pulse { 50% { opacity:.45;box-shadow:0 0 4px var(--cyan) } }
+    @keyframes orbit { to { transform:rotate(3deg) scale(1.025) } }
+    @media(max-width:760px) { nav { margin-bottom:52px }.hero { grid-template-columns:1fr;gap:45px }.copy { max-width:580px }.stage { max-width:540px;width:100%;margin:auto }.bottom { margin-top:56px } }
+    @media(max-width:480px) { main { width:calc(100% - 28px);padding-top:18px }.badge { font-size:10px;padding:6px 9px }.hero { gap:36px }h1 { font-size:46px }.intro { font-size:15px }.card { padding:20px }.orbit { inset:-12px }.meta { gap:13px;font-size:11px }.bottom { flex-direction:column } }
+    @media(prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important } }
+  </style>
+</head>
+<body>
+  <div class="ambient one"></div><div class="ambient two"></div><div class="grid"></div>
+  <main>
+    <nav><div class="brand"><span class="brand-icon" aria-hidden="true">✳</span> Puffx Host</div><span class="badge">WHMCS Addon · Interactive Demo</span></nav>
+    <section class="hero">
+      <div class="copy">
+        <div class="eyebrow"><span class="pulse"></span> Password management, refined</div>
+        <h1>A safer reset.<br><span>A smoother flow.</span></h1>
+        <p class="intro">A small preview of the WHMCS Client Password Changer. Create a strong password, adjust its length, and copy it in one click.</p>
+        <div class="meta"><span><b class="check">✓</b> Strong by default</span><span><b class="check">✓</b> Admin controlled</span></div>
+      </div>
+      <div class="stage">
+        <div class="orbit"></div>
+        <section class="card" aria-label="Interactive password generator demo">
+          <div class="card-top"><span class="card-title">Generate a password</span><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span></div>
+          <label for="password">YOUR NEW PASSWORD</label>
+          <div class="password-box">
+            <input id="password" type="password" readonly autocomplete="off" aria-label="Generated password">
+            <button class="icon-btn" id="toggle" type="button" aria-label="Show password" title="Show password"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+            <button class="icon-btn" id="refresh" type="button" aria-label="Generate another password" title="Generate another password"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.5 9a7 7 0 0 1 12-2l2.5 2M4 15l2.5 2a7 7 0 0 0 12-2"/></svg></button>
+          </div>
+          <div class="range-row"><label for="length">PASSWORD LENGTH</label><span class="length-value"><span id="length-value">16</span> characters</span></div>
+          <input id="length" type="range" min="12" max="32" value="16" aria-label="Password length">
+          <div class="strength"><span>STRENGTH</span><div class="strength-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div><strong>Very strong</strong></div>
+          <button class="copy-btn" id="copy" type="button"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg><span>Copy password</span></button>
+          <p class="footnote">Demo only. This page is not connected to a WHMCS account.</p>
+        </section>
+      </div>
+    </section>
+    <footer class="bottom"><span>Motion concept for WHMCS Client Password Changer</span><a href="https://github.com/puffxhost/whmcs-client-password-changer">View project on GitHub ↗</a></footer>
+  </main>
+  <script>
+    (() => {
+      const groups = ['abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', '0123456789', '!@#$%^&*()-_=+'];
+      const password = document.getElementById('password');
+      const slider = document.getElementById('length');
+      const lengthValue = document.getElementById('length-value');
+      const secureIndex = max => crypto.getRandomValues(new Uint32Array(1))[0] % max;
+      function generate() {
+        const all = groups.join('');
+        const chars = groups.map(group => group[secureIndex(group.length)]);
+        while (chars.length < Number(slider.value)) chars.push(all[secureIndex(all.length)]);
+        for (let i = chars.length - 1; i > 0; i--) { const j = secureIndex(i + 1); [chars[i], chars[j]] = [chars[j], chars[i]]; }
+        password.value = chars.join('');
+      }
+      slider.addEventListener('input', () => { lengthValue.textContent = slider.value; generate(); });
+      document.getElementById('refresh').addEventListener('click', generate);
+      document.getElementById('toggle').addEventListener('click', event => {
+        const visible = password.type === 'password'; password.type = visible ? 'text' : 'password';
+        event.currentTarget.setAttribute('aria-label', visible ? 'Hide password' : 'Show password');
+        event.currentTarget.title = visible ? 'Hide password' : 'Show password';
+      });
+      document.getElementById('copy').addEventListener('click', async event => {
+        const label = event.currentTarget.querySelector('span');
+        try { await navigator.clipboard.writeText(password.value); label.textContent = 'Copied to clipboard'; }
+        catch { password.type = 'text'; password.select(); document.execCommand('copy'); label.textContent = 'Copied to clipboard'; }
+        window.setTimeout(() => { label.textContent = 'Copy password'; }, 1700);
+      });
+      generate();
+    })();
+  </script>
+</body>
+</html>
+
