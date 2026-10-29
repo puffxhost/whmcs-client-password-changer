@@ -9,11 +9,20 @@
   <h2>✨ Key Features</h2>
   <ul>
     <li>🔑 Client-side password change functionality</li>
+    <li>🎲 Admin-generated passwords from 12 to 64 characters, with uppercase, lowercase, number, and symbol requirements</li>
+    <li>📋 One-click copy for securely sharing the generated password</li>
     <li>🧩 Seamless integration with WHMCS client area UI</li>
     <li>🚫 No core file modifications required</li>
     <li>⚡ Lightweight and efficient codebase</li>
     <li>✅ WHMCS v8.x+ compatible</li>
   </ul>
+
+  <h2>🎬 Motion Demo</h2>
+  <p>
+    Try the animated password generator preview at
+    <a href="https://puffxhost.github.io/whmcs-client-password-changer/">puffxhost.github.io/whmcs-client-password-changer</a>.
+    The demo is a standalone preview and does not connect to a WHMCS account. GitHub Pages must be enabled with GitHub Actions as the publishing source before the URL becomes available.
+  </p>
 
   <h2>📦 Installation Guide</h2>
   <ol>
@@ -61,7 +70,12 @@ ClientPasswordChanger/
 
   <h2>🧾 Changelog</h2>
   <pre>
-v1.0.0 – 07 August 2025
+  v1.1.0
+* Added configurable password length (12–64 characters)
+* Password generation now guarantees uppercase, lowercase, numeric, and symbol characters
+* Escaped generated passwords before displaying them in the admin page
+
+  v1.0.0 – 07 August 2025
 * Initial release
 * Secure client password change from client area
   </pre>
@@ -112,3 +126,4 @@ v1.0.0 – 07 August 2025
 
 </body>
 </html>
+
